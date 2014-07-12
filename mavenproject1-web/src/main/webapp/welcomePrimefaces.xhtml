@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"> 
+
+    <f:view contentType="text/html">
+        <h:head>
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+                <title>Konsultacije</title>
+            </f:facet>
+            <script type="text/javascript">
+    PrimeFaces.locales ['sr'] = {
+    closeText: 'Zatvori',
+    prevText: 'Nazad',
+    nextText: 'Napred',
+    monthNames: ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Juni', 'Juli', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar' ],
+    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec' ],
+    dayNames: ['Nedelja', 'Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak', 'Subota'],
+    dayNamesShort: ['Ned', 'Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub'],
+    dayNamesMin: ['N', 'P', 'U', 'S ', 'Č', 'P ', 'S'],
+    weekHeader: 'Sedmica',
+    firstDay: 1,
+    isRTL: false,
+    showMonthAfterYear: false,
+    yearSuffix:'',
+    timeOnlyTitle: 'Samo Vreme',
+    timeText: 'Vreme',
+    hourText: 'Sat',
+    minuteText: 'Minuta',
+    secondText: 'Sekunda',
+    currentText: 'Danas',
+    ampm: false,
+    month: 'Mesec',
+    week: 'sedmica',
+    day: 'Dan',
+    allDayText: 'Celi Dan'
+};
+    
+</script>
+<style type="text/css">
+    .value {
+        width: 800px;
+    }
+    .highlight {
+        border: 1px solid #262626 !important;
+        color: #dddddd !important;
+        background-color: #4d4d4d !important;
+        box-shadow: 0 0 8px #66cc00;
+    }
+    #east {
+        width: 25% !important;
+        padding-left: 3%;
+        padding-right: 3%;
+        overflow: hidden;
+    }
+    #center {
+        width: 59% !important;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+</style>
+        </h:head>
+
+        <h:body>
+
+            <p:layout  fullPage="true">
+
+
+
+                <p:layoutUnit position="center" id="center">
+                    <h:form id="forma">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+                            <p:growl id="messages" showDetail="true" />
+                            <h:panelGrid columnClasses="value">
+                                <p:schedule initialDate="#{scheduleView.selektovaniDatum}" id="schedule" 
+                                            value="#{scheduleView.eventModel}" widgetVar="myschedule" locale="sr">
+                                    <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" 
+                                            update="eventDetails, schedule" oncomplete="PF('eventDialog').show();" />
+                                    <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" 
+                                            update="eventDetails" oncomplete="PF('eventDialog').show();" />
+                                    <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" 
+                                            update="messages" />
+                                    <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" 
+                                            update="messages" />
+                                </p:schedule>
+                            </h:panelGrid>
+                        <!--</p:panel>-->
+                        
+                        <p:dialog widgetVar="eventDialog" header="Zakazi" showEffect="clip" hideEffect="clip">
+                            <h:panelGrid id="eventDetails" columns="2">
+                                <h:outputLabel for="tema" value="Tema:" />
+                                <p:inputText id="tema" value="#{scheduleView.termin.tema}" required="true" />
+
+                                <h:outputLabel for="vreme" value="Vreme:" />
+                                <p:inputMask id="vreme" value="#{scheduleView.termin.vreme}" mask="99:99" 
+                                             required="true">
+                                    <f:convertDateTime id="vremeKonv" pattern="hh:mm" />
+                                </p:inputMask>
+                                
+                                <p:fileUpload value="#{fileUploadController.file}" mode="advanced" auto="true"
+                                              sizeLimit="1000000" 
+                                              fileUploadListener="#{fileUploadController.upload}"/>
+
+                                <p:commandButton type="reset" value="Ponisti" />
+                                <p:commandButton id="addButton" value="Sacuvaj" 
+                                                actionListener="#{scheduleView.addEvent}" 
+                                                oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+                            </h:panelGrid>
+                        </p:dialog>  
+                            
+                    </h:form>
+ 
+
+                </p:layoutUnit>
+                
+                <p:layoutUnit position="east" id="east">
+                    <h:form id="forma2">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <p:panel id="panel" header="Izaberite predmet i profesora" styleClass="panel">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <p:outputLabel value="Predmet:" for="predmetDD" />
+                                <p:autoComplete id="predmetDD" dropdown="true" value="#{scheduleView.predmet}" 
+                                    completeMethod="#{scheduleView.vratiPredmete}" var="predmet"
+                                    itemValue="#{predmet}" itemLabel="#{predmet.naziv}" converter="predmetKonverter"
+                                    forceSelection="true" emptyMessage="Nema rezultata">
+                                    <p:ajax event="itemSelect" update="profesorDD " 
+                                            listener="#{scheduleView.onPredmetChange}"/>
+                                </p:autoComplete>
+
+                                <p:outputLabel value="Profesor:" for="profesorDD" />
+                                <p:autoComplete  id="profesorDD" dropdown="true" value="#{scheduleView.profesor}" 
+                                    completeMethod="#{scheduleView.vratiProfesore}" var="profesor"
+                                    itemValue="#{profesor}" itemLabel="#{profesor.prezime}" 
+                                    converter="profesorKonverter" forceSelection="true" emptyMessage="Nema rezultata">
+                                    <p:ajax event="itemSelect" update=":forma:schedule termini " 
+                                            listener="#{scheduleView.onProfesorChange}"/>
+                                </p:autoComplete>
+
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <p:outputLabel value="Termini konsultacija:" />
+                                <h:outputText title="Termini konsultacija" id="termini" 
+                                              value="#{scheduleView.termini}" style="white-space: pre-wrap"/>
+                                
+                            </h:panelGrid>
+                        </p:panel>
+                        
+                    </h:form>
+                    <p:panel id="panelLogout" header="Izlogujte se iz aplikacije" styleClass="panel">
+                        <form action="./logout" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            <input type="submit" value="Logout"/>
+                        </form>
+                    </p:panel>
+                </p:layoutUnit>
+            </p:layout>
+
+        </h:body>
+
+    </f:view>
+    
+    <script>
+        
+$( document ).ready(function() {
+    $('.fc-day').click(function () {
+        $(this).addClass('highlight');
+    } );
+});
+    </script>
+</html>
+

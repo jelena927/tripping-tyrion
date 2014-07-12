@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.CONFIG_FILES</param-name>
+        <param-value>
+            /WEB-INF/faces-config.xml
+        </param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>login</servlet-name>
+        <jsp-file>/login.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/mavenproject1-web/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>/faces/*</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>faces/welcomePrimefaces.xhtml</welcome-file>
+    </welcome-file-list>
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>afterdark</param-value>
+    </context-param>
+    <ejb-local-ref>
+        <ejb-ref-name>SBPredmet</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>ejb.SBPredmetLocal</local>
+        <ejb-link>mavenproject1-ejb-1.0-SNAPSHOT.jar#SBPredmet</ejb-link>
+    </ejb-local-ref>
+    <ejb-local-ref>
+        <ejb-ref-name>SBProfesor</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>ejb.SBProfesorLocal</local>
+        <ejb-link>mavenproject1-ejb-1.0-SNAPSHOT.jar#SBProfesor</ejb-link>
+    </ejb-local-ref>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+                    /WEB-INF/spring-security.xml
+            </param-value>
+    </context-param>
+    <ejb-local-ref>
+        <ejb-ref-name>SBTermin</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>ejb.SBTerminLocal</local>
+        <ejb-link>mavenproject1-ejb-1.0-SNAPSHOT.jar#SBTermin</ejb-link>
+    </ejb-local-ref>
+</web-app>
