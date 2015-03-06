@@ -6,7 +6,6 @@
 
 package konverteri;
 
-import ejb.SBPredmetLocal;
 import ejb.SBProfesorLocal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +16,6 @@ import javax.faces.convert.FacesConverter;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import model.Predmet;
 import model.Profesor;
 
 /**
@@ -41,7 +39,7 @@ public class ProfesorKonverter implements Converter{
     private SBProfesorLocal lookupSBProfesorLocal() {
         try {
             Context c = new InitialContext();
-            return (SBProfesorLocal) c.lookup("java:global/mavenproject1-ear-1.0-SNAPSHOT/mavenproject1-web-1.0-SNAPSHOT/SBProfesor");
+            return (SBProfesorLocal) c.lookup("java:app/mavenproject1-ejb-1.0-SNAPSHOT/SBProfesor");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);

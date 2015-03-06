@@ -103,7 +103,7 @@ public class Student extends Korisnik implements Serializable {
         this.email = email;
     }
 
-    @OneToMany(mappedBy = "studentId")
+    @OneToMany(mappedBy = "student")
     @XmlTransient
     public List<Termin> getTerminList() {
         return terminList;

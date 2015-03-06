@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Prijava</title>
+        <style>
+            .panel {
+                width: 25%;
+                margin: 0 auto;
+                margin-top: 10%;
+            }
+            .label {
+                margin-right: 30px;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        ${error}
+        <p:layout  fullPage="true">
+            <p:layoutUnit position="center" id="center">
+                <p:panel styleClass="panel" header="Prijava na sistem" >
+                    <h:form id="login" onsubmit="document.getElementById('login').action='/mavenproject1-web/perform_login';" prependId="false">
+                        <input name="${_csrf.parameterName}" type="hidden" value="${_csrf.token}"></input>
+                        <h:panelGrid columns="2" cellspacing="5" >
+                            <p:outputLabel for="username" value="Korisničko ime" styleClass="label"/>
+                            <p:inputText id="username" value="user" />            
+                            <p:outputLabel for="password" value="Lozinka" />
+                            <p:password id="password" value="pass"/>
+                            <p:commandButton id="submit" value="Prijavi se" ajax="false"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:panel>
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+</html>
+

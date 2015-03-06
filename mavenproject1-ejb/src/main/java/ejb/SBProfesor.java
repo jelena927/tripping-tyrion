@@ -25,7 +25,7 @@ public class SBProfesor implements SBProfesorLocal {
 //    public List vratiProfesorePoPredmetu(String predmetId) {
 //        return em.createNamedQuery("Profesor.findByPredmet").setParameter("predmetId", predmetId).getResultList();
 //    }
-    
+
     
 
     // Add business logic below. (Right-click in editor and choose

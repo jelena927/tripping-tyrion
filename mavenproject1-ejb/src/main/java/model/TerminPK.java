@@ -19,11 +19,12 @@ import javax.validation.constraints.Size;
  */
 @Embeddable
 public class TerminPK implements Serializable {
+    
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 10)
     @Column(name = "konsultacijeId")
-    private String konsultacijeId;
+    private String konsultacijeid;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 10)
@@ -34,16 +35,16 @@ public class TerminPK implements Serializable {
     }
 
     public TerminPK(String konsultacijeId, String terminId) {
-        this.konsultacijeId = konsultacijeId;
+        this.konsultacijeid = konsultacijeId;
         this.terminId = terminId;
     }
 
     public String getKonsultacijeId() {
-        return konsultacijeId;
+        return konsultacijeid;
     }
 
     public void setKonsultacijeId(String konsultacijeId) {
-        this.konsultacijeId = konsultacijeId;
+        this.konsultacijeid = konsultacijeId;
     }
 
     public String getTerminId() {
@@ -57,7 +58,7 @@ public class TerminPK implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (konsultacijeId != null ? konsultacijeId.hashCode() : 0);
+        hash += (konsultacijeid != null ? konsultacijeid.hashCode() : 0);
         hash += (terminId != null ? terminId.hashCode() : 0);
         return hash;
     }
@@ -69,7 +70,7 @@ public class TerminPK implements Serializable {
             return false;
         }
         TerminPK other = (TerminPK) object;
-        if ((this.konsultacijeId == null && other.konsultacijeId != null) || (this.konsultacijeId != null && !this.konsultacijeId.equals(other.konsultacijeId))) {
+        if ((this.konsultacijeid == null && other.konsultacijeid != null) || (this.konsultacijeid != null && !this.konsultacijeid.equals(other.konsultacijeid))) {
             return false;
         }
         if ((this.terminId == null && other.terminId != null) || (this.terminId != null && !this.terminId.equals(other.terminId))) {
@@ -80,7 +81,7 @@ public class TerminPK implements Serializable {
 
     @Override
     public String toString() {
-        return "model.TerminPK[ konsultacijeId=" + konsultacijeId + ", terminId=" + terminId + " ]";
+        return "model.TerminPK[ konsultacijeId=" + konsultacijeid + ", terminId=" + terminId + " ]";
     }
     
 }

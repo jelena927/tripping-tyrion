@@ -12,15 +12,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import model.Konsultacije;
 import model.Predmet;
@@ -31,10 +28,7 @@ import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultScheduleEvent;
 import org.primefaces.model.DefaultScheduleModel;
-import org.primefaces.model.LazyScheduleModel;
-import org.primefaces.model.ScheduleEvent;
 import org.primefaces.model.ScheduleModel;
-import org.primefaces.model.UploadedFile;
 
 /**
  *
@@ -47,8 +41,6 @@ public class ScheduleView implements Serializable {
     private MBPredmet mbPredmet;
     @ManagedProperty("#{mbProfesor}")
     private MBProfesor mbProfesor;
-    @ManagedProperty("#{mBLogovanje}")
-    private MBLogovanje mBLogovanje;
     private ScheduleModel eventModel;
     private ScheduleModel lazyEventModel;
     private DefaultScheduleEvent event = new DefaultScheduleEvent();
@@ -59,14 +51,6 @@ public class ScheduleView implements Serializable {
     private String termini;
     private Termin termin;
     private Date selektovaniDatum;
-
-    public MBLogovanje getmBLogovanje() {
-        return mBLogovanje;
-    }
-
-    public void setmBLogovanje(MBLogovanje mBLogovanje) {
-        this.mBLogovanje = mBLogovanje;
-    }
 
     public Date getSelektovaniDatum() {
         return selektovaniDatum;
@@ -323,6 +307,11 @@ public class ScheduleView implements Serializable {
     public void onPredmetChange(){
         profesor = null;
         eventModel.clear();
+    }
+    
+    public void onPredmetType(){
+        predmet = null;
+        profesor = null;
     }
 
 }

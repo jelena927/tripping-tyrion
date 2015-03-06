@@ -17,6 +17,6 @@ import model.Korisnik;
 @Local
 public interface KorisnikServiceBeanLocal {
 
-    Korisnik ulogujKorisnika(String email, String password) throws Exception;
+    Korisnik findUserByLoginName(String email, String password) throws Exception;
     
 }

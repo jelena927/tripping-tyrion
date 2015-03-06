@@ -7,7 +7,6 @@
 package model;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -18,7 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -27,8 +25,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-//import org.hibernate.annotations.Fetch;
-//import org.hibernate.annotations.FetchMode;
 
 /**
  *
@@ -51,7 +47,6 @@ public class Profesor extends Korisnik  implements Serializable {
     private static final long serialVersionUID = 1L;
     private String profesorId;
     private Set<Konsultacije> konsultacijeList;
-//    private Predmet predmetId;
     private Set<Predmet> predmetList;
 
     public Profesor() {
@@ -151,10 +146,12 @@ public class Profesor extends Korisnik  implements Serializable {
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "password")
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public void setPassword(String password) {
         this.password = password;
     }

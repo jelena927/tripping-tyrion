@@ -8,7 +8,6 @@ package model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -43,30 +42,38 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Konsultacije.findByVremeZavrsetka", query = "SELECT k FROM Konsultacije k WHERE k.vremeZavrsetka = :vremeZavrsetka"),
     @NamedQuery(name = "Konsultacije.findByTrajanjeJednogTermina", query = "SELECT k FROM Konsultacije k WHERE k.trajanjeJednogTermina = :trajanjeJednogTermina")})
 public class Konsultacije implements Serializable {
+    
     private static final long serialVersionUID = 1L;
+    
     @Id
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 10)
     @Column(name = "konsultacijeId")
     private String konsultacijeId;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "vremePocetka")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vremePocetka;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "vremeZavrsetka")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vremeZavrsetka;
+    
     @Column(name = "trajanjeJednogTermina")
     private Integer trajanjeJednogTermina;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "konsultacije", fetch = FetchType.EAGER)
     private Set<Termin> terminList;
+    
     @JoinColumn(name = "profesorId", referencedColumnName = "profesorId")
     @ManyToOne(optional = false)
     private Profesor profesorId;
+    
     @JoinColumn(name = "predmetId", referencedColumnName = "predmetId")
     @ManyToOne(optional = false)
     private Predmet predmetId;

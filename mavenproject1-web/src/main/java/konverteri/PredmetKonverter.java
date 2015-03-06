@@ -42,7 +42,7 @@ public class PredmetKonverter implements Converter{
     private SBPredmetLocal lookupSBPredmetLocal() {
         try {
             Context c = new InitialContext();
-            return (SBPredmetLocal) c.lookup("java:global/mavenproject1-ear-1.0-SNAPSHOT/mavenproject1-web-1.0-SNAPSHOT/SBPredmet");
+            return (SBPredmetLocal) c.lookup("java:app/mavenproject1-ejb-1.0-SNAPSHOT/SBPredmet");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);

@@ -14,9 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -40,23 +38,23 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Predmet.findByPrefix", query = "SELECT p FROM Predmet p WHERE p.naziv like :naziv")})
 public class Predmet implements Serializable {
     private static final long serialVersionUID = 1L;
+    
     @Id
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 10)
     @Column(name = "predmetId")
     private String predmetId;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
     @Column(name = "naziv")
     private String naziv;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "predmetId")
     private List<Konsultacije> konsultacijeList;
     
-//    @JoinColumn(name = "profesorId", referencedColumnName = "profesorId")
-//    @ManyToOne
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "predmetId", targetEntity = Profesor.class, fetch = FetchType.EAGER)
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "predmetList")
     private List<Profesor> profesorList;
 

@@ -8,6 +8,7 @@ package ejb;
 
 import java.util.Date;
 import javax.ejb.Stateless;
+import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -25,7 +26,7 @@ public class KorisnikServiceBean implements KorisnikServiceBeanLocal {
     private EntityManager em;
 
     @Override
-    public Korisnik ulogujKorisnika(String email, String password) throws Exception{
+    public Korisnik findUserByLoginName(String email, String password) throws Exception{
         Korisnik k = nadjiKorisnika(email);
         proveriPassword(k, password);
         return k;

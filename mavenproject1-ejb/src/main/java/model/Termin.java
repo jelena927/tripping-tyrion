@@ -14,6 +14,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -32,32 +33,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Termin.findAll", query = "SELECT t FROM Termin t"),
-    @NamedQuery(name = "Termin.findByKonsultacijeId", query = "SELECT t FROM Termin t WHERE t.terminPK.konsultacijeId = :konsultacijeId"),
+//    @NamedQuery(name = "Termin.findByKonsultacijeId", query = "SELECT t FROM Termin t WHERE t.terminPK.konsultacijeId = :konsultacijeId"),
     @NamedQuery(name = "Termin.findByTerminId", query = "SELECT t FROM Termin t WHERE t.terminPK.terminId = :terminId"),
     @NamedQuery(name = "Termin.findByVreme", query = "SELECT t FROM Termin t WHERE t.vreme = :vreme"),
     @NamedQuery(name = "Termin.findByTema", query = "SELECT t FROM Termin t WHERE t.tema = :tema"),
     @NamedQuery(name = "Termin.findByKomentar", query = "SELECT t FROM Termin t WHERE t.komentar = :komentar")})
 public class Termin implements Serializable {
+    
     private static final long serialVersionUID = 1L;
+    
     @EmbeddedId
     protected TerminPK terminPK;
+    
     @Column(name = "vreme")
     @Temporal(TemporalType.TIMESTAMP)
     private Date vreme;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "tema")
     private String tema;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 300)
     @Column(name = "komentar")
     private String komentar;
+    
+    @Basic(optional = false)
+    @Size(min = 1, max = 10)
     @JoinColumn(name = "studentId", referencedColumnName = "studentId")
     @ManyToOne
-    private Student studentId;
+    private Student student;
+    
+    @Basic(optional = false)
     @JoinColumn(name = "konsultacijeId", referencedColumnName = "konsultacijeId", insertable = false, updatable = false)
+    @MapsId("konsultacijeid")
     @ManyToOne(optional = false)
     private Konsultacije konsultacije;
 
@@ -110,20 +122,12 @@ public class Termin implements Serializable {
         this.komentar = komentar;
     }
 
-    public Student getStudentId() {
-        return studentId;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setStudentId(Student studentId) {
-        this.studentId = studentId;
-    }
-
-    public Konsultacije getKonsultacije() {
-        return konsultacije;
-    }
-
-    public void setKonsultacije(Konsultacije konsultacije) {
-        this.konsultacije = konsultacije;
+    public void setStudent(Student studentId) {
+        this.student = studentId;
     }
 
     @Override
@@ -149,6 +153,20 @@ public class Termin implements Serializable {
     @Override
     public String toString() {
         return "model.Termin[ terminPK=" + terminPK + " ]";
+    }
+
+    /**
+     * @return the konsultacije
+     */
+    public Konsultacije getKonsultacije() {
+        return konsultacije;
+    }
+
+    /**
+     * @param konsultacije the konsultacije to set
+     */
+    public void setKonsultacije(Konsultacije konsultacije) {
+        this.konsultacije = konsultacije;
     }
     
 }

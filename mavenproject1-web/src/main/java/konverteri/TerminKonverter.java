@@ -39,7 +39,7 @@ public class TerminKonverter implements Converter{
     private SBTerminLocal lookupSBTerminLocal() {
         try {
             Context c = new InitialContext();
-            return (SBTerminLocal) c.lookup("java:global/mavenproject1-ear-1.0-SNAPSHOT/mavenproject1-web-1.0-SNAPSHOT/SBTermin");
+            return (SBTerminLocal) c.lookup("java:app/mavenproject1-ejb-1.0-SNAPSHOT/SBTermin");
         } catch (NamingException ne) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);
