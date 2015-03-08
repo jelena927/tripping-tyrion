@@ -31,15 +31,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @PersistenceContext(name="ime", unitName="OfficehoursManagment-ejbPU")
-public class LoginService implements UserDetailsService
-{
-    public LoginService( )
-    {
+public class LoginService implements UserDetailsService{
+    
+    public static final String ROLE_STUDENT = "student";
+    public static final String ROLE_PROFESOR = "profesor";
+    
+    public LoginService(){
     }
  
     @Override
-    public UserDetails loadUserByUsername( String username ) throws UsernameNotFoundException
-    {
+    public UserDetails loadUserByUsername( String username ) throws UsernameNotFoundException {
         
         Korisnik user = null;
         try {
@@ -55,11 +56,11 @@ public class LoginService implements UserDetailsService
  
         List<SimpleGrantedAuthority> authorities;
         if(user instanceof Student)
-            authorities = Arrays.asList( new SimpleGrantedAuthority( "student" ) );
+            authorities = Arrays.asList( new SimpleGrantedAuthority(ROLE_STUDENT));
         else
-            authorities = Arrays.asList( new SimpleGrantedAuthority( "profesor" ) );
+            authorities = Arrays.asList( new SimpleGrantedAuthority(ROLE_PROFESOR));
  
-        return new User( username, user.getPassword(), Arrays.asList( new SimpleGrantedAuthority( "USER" ) ) );
+        return new User( username, user.getPassword(), authorities);
     }
 
     public Korisnik loadUserByEmail(String email) throws Exception {

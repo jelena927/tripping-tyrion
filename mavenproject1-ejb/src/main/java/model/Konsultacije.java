@@ -71,11 +71,11 @@ public class Konsultacije implements Serializable {
     private Set<Termin> terminList;
     
     @JoinColumn(name = "profesorId", referencedColumnName = "profesorId")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Profesor profesorId;
     
     @JoinColumn(name = "predmetId", referencedColumnName = "predmetId")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER, targetEntity = Predmet.class)
     private Predmet predmetId;
 
     public Konsultacije() {
@@ -194,7 +194,7 @@ public class Konsultacije implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Konsultacije[ konsultacijeId=" + konsultacijeId + " ]";
+        return vremePocetka + " - " + vremeZavrsetka;
     }
     
 }

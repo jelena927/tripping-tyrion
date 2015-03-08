@@ -43,17 +43,27 @@ public class ScheduleView implements Serializable {
     private MBProfesor mbProfesor;
     @ManagedProperty("#{mbTermin}")
     private MbTermin mbTermin;
+    @ManagedProperty("#{mbKorisnik}")
+    private MbKorisnik mbKorisnik;
     private ScheduleModel eventModel;
     private DefaultScheduleEvent event = new DefaultScheduleEvent();
     private Predmet predmet;
     private Profesor profesor;
-    private String termini;
-    private Termin termin;
+    private String terminiKonsultacija;
     private Date selektovaniDatum;
     private String tema;
     private Date vreme;
     private boolean disableProfesore = true;
     private Konsultacije konsultacije;
+    private Date kDatum;
+    private Date kOd;
+    private Date kDo;
+    
+    @PostConstruct
+    public void init() {
+        eventModel = new DefaultScheduleModel();
+        selektovaniDatum = new Date(today().getTimeInMillis());
+    }
 
     public Date getSelektovaniDatum() {
         return selektovaniDatum;
@@ -63,20 +73,12 @@ public class ScheduleView implements Serializable {
         this.selektovaniDatum = danasnjiDatum;
     }
 
-    public Termin getTermin() {
-        return termin;
+    public String getTerminiKonsultacija() {
+        return terminiKonsultacija;
     }
 
-    public void setTermin(Termin termin) {
-        this.termin = termin;
-    }
-
-    public String getTermini() {
-        return termini;
-    }
-
-    public void setTermini(String termini) {
-        this.termini = termini;
+    public void setTerminiKonsultacija(String termini) {
+        this.terminiKonsultacija = termini;
     }
     
     public Predmet getPredmet() {
@@ -101,31 +103,6 @@ public class ScheduleView implements Serializable {
 
     public void setMbProfesor(MBProfesor mbProfesor) {
         this.mbProfesor = mbProfesor;
-    }
-    
-    @PostConstruct
-    public void init() {
-        eventModel = new DefaultScheduleModel();
-        selektovaniDatum = new Date(today().getTimeInMillis());
-        termin = new Termin();
-//        eventModel.addEvent(new DefaultScheduleEvent("Champions League Match", previousDay8Pm(), previousDay11Pm()));
-//        eventModel.addEvent(new DefaultScheduleEvent("Birthday Party", today1Pm(), today6Pm()));
-//        eventModel.addEvent(new DefaultScheduleEvent("Breakfast at Tiffanys", nextDay9Am(), nextDay11Am(), true));
-//        eventModel.addEvent(new DefaultScheduleEvent("Breakfast at Tiffanys", nextDay9Am(), nextDay10Am()));
-//        eventModel.addEvent(new DefaultScheduleEvent("Breakfast at Tiffanys", nextDay10Am(), nextDay11Am()));
-//        eventModel.addEvent(new DefaultScheduleEvent("Plant the new garden stuff", theDayAfter3Pm(), fourDaysLater3pm()));
-//         
-//        lazyEventModel = new LazyScheduleModel(){
-//             
-//            @Override
-//            public void loadEvents(Date start, Date end) {
-//                Date random = getRandomDate(start);
-//                addEvent(new DefaultScheduleEvent("Lazy Event 1", random, random));
-//                 
-//                random = getRandomDate(start);
-//                addEvent(new DefaultScheduleEvent("Lazy Event 2", random, random));
-//            }   
-//        };
     }
      
     public ScheduleModel getEventModel() {
@@ -221,7 +198,6 @@ public class ScheduleView implements Serializable {
     }
     
     public void reset(){
-        termin = null;
         vreme = null;
         selektovaniDatum = null;
         tema = null;
@@ -229,13 +205,13 @@ public class ScheduleView implements Serializable {
     }
     
     public void onProfesorChange(){
-        termini = "";
+        terminiKonsultacija = "";
         eventModel.clear();
         for (Konsultacije k : profesor.getKonsultacijeList()) {
             SimpleDateFormat sdfPocetak = new SimpleDateFormat("dd.MM. hh:mm");
             SimpleDateFormat sdfKraj = new SimpleDateFormat("hh:mm");
             if(k.getPredmetId().equals(predmet)){
-                termini += sdfPocetak.format(k.getVremePocetka()) + " - " + 
+                terminiKonsultacija += sdfPocetak.format(k.getVremePocetka()) + " - " + 
                         sdfKraj.format(k.getVremeZavrsetka()) + "\n";
                 for (Termin t: k.getTerminList()) {
                     eventModel.addEvent(new DefaultScheduleEvent("Zauzeto", 
@@ -271,7 +247,7 @@ public class ScheduleView implements Serializable {
         predmet = null;
         profesor = null;
         eventModel.clear();
-        termini = null;
+        terminiKonsultacija = null;
     }
 
     public String getTema() {
@@ -304,5 +280,59 @@ public class ScheduleView implements Serializable {
 
     public void setMbTermin(MbTermin mbTermin) {
         this.mbTermin = mbTermin;
+    }
+
+    public MbKorisnik getMbKorisnik() {
+        return mbKorisnik;
+    }
+
+    public void setMbKorisnik(MbKorisnik mbKorisnik) {
+        this.mbKorisnik = mbKorisnik;
+    }
+    
+    public String formatDatum(Konsultacije k){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.");
+        return sdf.format(k.getVremePocetka());
+    }
+    
+    public String formatVreme(Konsultacije k){
+        String sVreme = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        sVreme += sdf.format(k.getVremePocetka());
+        sVreme += " - ";
+        sVreme += sdf.format(k.getVremeZavrsetka());
+        return sVreme;
+    }
+    
+    public void otkazi(Konsultacije k){
+        mbTermin.obrisiKonsultacije(k);
+    }
+    
+    public void dodajKonsultacije(Object o){
+        System.out.println(o);
+    }
+    
+    public Date getkDatum() {
+        return kDatum;
+    }
+
+    public void setkDatum(Date kDatum) {
+        this.kDatum = kDatum;
+    }
+
+    public Date getkOd() {
+        return kOd;
+    }
+
+    public void setkOd(Date kOd) {
+        this.kOd = kOd;
+    }
+
+    public Date getkDo() {
+        return kDo;
+    }
+
+    public void setkDo(Date kDo) {
+        this.kDo = kDo;
     }
 }

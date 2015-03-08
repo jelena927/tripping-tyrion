@@ -17,6 +17,7 @@ import model.Termin;
 @Local
 public interface SBTerminLocal {
     public Termin vratiTermin(long terminId);
-    public void sacuvajTermin(Object k);
+    public void sacuvajTermin(Termin t);
     public Konsultacije vratiKonsultacije(long konsultacijeId);
+    public void obrisiKonsultacije(Konsultacije k);
 }

@@ -59,5 +59,9 @@ public class MbTermin implements Serializable{
     public void setMbKorisnik(MbKorisnik mbKorisnik) {
         this.mbKorisnik = mbKorisnik;
     }
+
+    void obrisiKonsultacije(Konsultacije k) {
+        sBTermin.obrisiKonsultacije(k);
+    }
     
 }

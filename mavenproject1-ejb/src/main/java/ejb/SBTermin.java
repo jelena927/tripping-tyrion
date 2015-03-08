@@ -12,6 +12,12 @@ import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import model.Konsultacije;
 import model.Termin;
 import model.TerminPK;
@@ -27,11 +33,10 @@ public class SBTermin implements SBTerminLocal {
     @Resource
     private javax.transaction.UserTransaction utx;
 
-    public void sacuvaj(Object object) {
+    public void sacuvaj(Termin t) {
         try {
 //            utx.begin();
 //            em.merge(object.getKonsultacije());
-            Termin t = (Termin) object;
             TerminPK tpk = new TerminPK();
             tpk.setKonsultacije(vratiKonsultacije(t.getTerminPK().getKonsultacije().getKonsultacijeId()));
             tpk.setVreme(t.getTerminPK().getVreme());
@@ -54,12 +59,21 @@ public class SBTermin implements SBTerminLocal {
     // "Insert Code > Add Business Method")
 
     @Override
-    public void sacuvajTermin(Object k) {
-        sacuvaj(k);
+    public void sacuvajTermin(Termin t) {
+        sacuvaj(t);
     }
 
     @Override
     public Konsultacije vratiKonsultacije(long konsultacijeId) {
         return (Konsultacije) em.createNamedQuery("Konsultacije.findByKonsultacijeId").setParameter("konsultacijeId", konsultacijeId).getSingleResult();
+    }
+
+    @Override
+    public void obrisiKonsultacije(Konsultacije k) {
+        Query q = em.createNamedQuery("Konsultacije.findByKonsultacijeId").setParameter("konsultacijeId", k.getKonsultacijeId());
+        Konsultacije kons = (Konsultacije) q.getSingleResult();
+//        kons.setPredmetId(k.getPredmetId());
+        em.remove(kons);
+        
     }
 }

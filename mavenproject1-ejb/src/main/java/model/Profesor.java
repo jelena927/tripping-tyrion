@@ -106,7 +106,7 @@ public class Profesor extends Korisnik  implements Serializable {
         this.email = email;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "profesorId", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "profesorId", fetch = FetchType.EAGER)
     @XmlTransient
     public Set<Konsultacije> getKonsultacijeList() {
         return konsultacijeList;
@@ -116,7 +116,7 @@ public class Profesor extends Korisnik  implements Serializable {
         this.konsultacijeList = konsultacijeList;
     }
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "predaje", joinColumns = { 
             @JoinColumn(name = "profesorId", nullable = false, updatable = false) }, 
             inverseJoinColumns = { @JoinColumn(name = "predmetId", 

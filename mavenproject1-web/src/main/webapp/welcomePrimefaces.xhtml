@@ -24,10 +24,10 @@
     isRTL: false,
     showMonthAfterYear: false,
     yearSuffix:'',
-    timeOnlyTitle: 'Samo Vreme',
+    timeOnlyTitle: 'Vreme',
     timeText: 'Vreme',
     hourText: 'Sat',
-    minuteText: 'Minuta',
+    minuteText: 'Minut',
     secondText: 'Sekunda',
     currentText: 'Danas',
     ampm: false,
@@ -89,20 +89,17 @@
                         <p:inputText id="tema" value="#{scheduleView.tema}" required="true" />
                         
                         <p:outputLabel for="time" value="Vreme:" />
-                        <p:calendar id="time" value="#{scheduleView.vreme}" pattern="HH:mm a" timeOnly="true"  />
+                        <p:calendar id="time" value="#{scheduleView.vreme}" pattern="HH:mm" timeOnly="true" locale="sr"/>
                         
                         <p:outputLabel for="datumPopup" value="Izabrani datum:" />
-                        <p:calendar id="datumPopup" value="#{scheduleView.selektovaniDatum}" />
+                        <p:calendar id="datumPopup" value="#{scheduleView.selektovaniDatum}" pattern="dd.MM.yyyy."/>
 
                         <p:commandButton id="addButton" value="Sacuvaj" 
                                          actionListener="#{scheduleView.addEvent}"
                                          onsuccess="PF('myschedule').update();PF('eventDialog').hide();" />
                     </h:panelGrid>
                 </p:dialog>  
-
             </h:form>
-
-
         </p:layoutUnit>
 
         <p:layoutUnit position="east" id="east">
@@ -127,25 +124,70 @@
                                          disabled="#{scheduleView.disableProfesore}"
                             itemValue="#{profesor}" itemLabel="#{profesor.prezime} #{profesor.ime}" 
                             converter="profesorKonverter" forceSelection="true" emptyMessage="Nema rezultata">
-                            <p:ajax event="itemSelect" update=":forma:schedule termini " 
+                            <p:ajax event="itemSelect" update=":forma:schedule konsultacije" 
                                     listener="#{scheduleView.onProfesorChange}"/>
                         </p:autoComplete>
 
                     </h:panelGrid>
-                    <h:panelGrid columns="2" cellpadding="5">
+                    <h:panelGrid columns="1" cellpadding="1">
                         <p:outputLabel value="Termini konsultacija:" />
-                        <h:outputText title="Termini konsultacija" id="termini" 
-                                      value="#{scheduleView.termini}" style="white-space: pre-wrap"/>
 
+                        <c:set var="prof" value="${mbKorisnik.daLiJeProfesor()}"/>
+                        
+                        <p:dataTable id="konsultacije" var="k" value="#{scheduleView.profesor.konsultacijeList.toArray()}" emptyMessage="Nema rezultata">
+                            <p:column headerText="Datum">
+                                <h:outputText value="#{scheduleView.formatDatum(k)}" />
+                            </p:column>
+
+                            <p:column headerText="Vreme">
+                                <h:outputText value="#{scheduleView.formatVreme(k)}" />
+                            </p:column>
+                            
+                            <c:if test="${mbKorisnik.koJeKorisnik() == scheduleView.profesor.email}">
+                                <p:column headerText="Otkaži">
+                                    <p:commandButton actionListener="#{scheduleView.otkazi(k)}" id="remove" icon="ui-icon-closethick" />
+                                </p:column>
+                            </c:if>
+                        </p:dataTable>
+                        
+                        <c:if test="${prof}">
+                            <p:commandButton value="Dodajte konsultacije">
+                                <p:ajax oncomplete="PF('konsultacijeDialog').show();"/>
+                            </p:commandButton>
+                        </c:if>
                     </h:panelGrid>
                 </p:panel>
+                  
+                <p:dialog widgetVar="konsultacijeDialog" header="Nove konsultacije" showEffect="clip" hideEffect="clip">
+                    <h:panelGrid id="konsultacijeDetails" columns="2">
+                        
+                        <p:outputLabel for="datumPopup2" value="Datum:"/>
+                        <p:calendar id="datumPopup2" value="kDatum" pattern="dd.MM.yyyy."/>
+                        
+                        <p:outputLabel for="time2" value="Od:" />
+                        <p:calendar id="time2" pattern="HH:mm" value="kOd" timeOnly="true" locale="sr"/>
+                        
+                        <p:outputLabel for="time3" value="Do" />
+                        <p:calendar id="time3"  pattern="HH:mm" value="kDo" timeOnly="true" locale="sr"/>
+
+                        <p:commandButton id="addButton" value="Sacuvaj" 
+                                         actionListener="#{scheduleView.dodajKonsultacije}"
+                                         onsuccess="PF('konsultacije').update();PF('konsultacijeDialog').hide();" />
+                    </h:panelGrid>
+                </p:dialog>  
 
             </h:form>
-            <p:panel id="panelLogout" header="Izlogujte se iz aplikacije" styleClass="panel">
-                <form action="/mavenproject1-web/logout" method="post">
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    <input type="submit" value="Logout"/>
-                </form>
+            <p:panel id="panelLogout" header="Informacije o korisniku" styleClass="panel">
+                <h:form id="logout" onsubmit="document.getElementById('logout').action='/mavenproject1-web/logout';" prependId="false">
+                    <input name="${_csrf.parameterName}" type="hidden" value="${_csrf.token}"></input>
+                    <h:panelGrid columns="2" cellspacing="5" >
+                        <p:outputLabel value="Ulogovani ste kao:" for="korisnik"/>
+                        <h:outputText title="korisnik" id="korisnik" value="#{mbKorisnik.koJeKorisnik()}"/>
+                        <p:outputLabel value="Tip korisnika:" for="role"/>
+                        <h:outputText title="role" id="role" value="#{mbKorisnik.vratiTipKorisnika()}"/>
+                        <p:commandButton id="submit" value="Odjavite se" ajax="false"/>
+                    </h:panelGrid>
+                </h:form>
             </p:panel>
         </p:layoutUnit>
     </p:layout>

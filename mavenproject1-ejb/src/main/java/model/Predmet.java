@@ -9,7 +9,6 @@ package model;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -53,7 +52,7 @@ public class Predmet implements Serializable {
     @Column(name = "naziv")
     private String naziv;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "predmetId")
+    @OneToMany( mappedBy = "predmetId")
     private List<Konsultacije> konsultacijeList;
     
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "predmetList")
