@@ -82,27 +82,21 @@
                                     update="messages" />
                         </p:schedule>
                     </h:panelGrid>
-                <!--</p:panel>-->
 
                 <p:dialog widgetVar="eventDialog" header="Zakazi" showEffect="clip" hideEffect="clip">
                     <h:panelGrid id="eventDetails" columns="2">
                         <h:outputLabel for="tema" value="Tema:" />
-                        <p:inputText id="tema" value="#{scheduleView.termin.tema}" required="true" />
+                        <p:inputText id="tema" value="#{scheduleView.tema}" required="true" />
+                        
+                        <p:outputLabel for="time" value="Vreme:" />
+                        <p:calendar id="time" value="#{scheduleView.vreme}" pattern="HH:mm a" timeOnly="true"  />
+                        
+                        <p:outputLabel for="datumPopup" value="Izabrani datum:" />
+                        <p:calendar id="datumPopup" value="#{scheduleView.selektovaniDatum}" />
 
-                        <h:outputLabel for="vreme" value="Vreme:" />
-                        <p:inputMask id="vreme" value="#{scheduleView.termin.vreme}" mask="99:99" 
-                                     required="true">
-                            <f:convertDateTime id="vremeKonv" pattern="hh:mm" />
-                        </p:inputMask>
-
-                        <p:fileUpload value="#{fileUploadController.file}" mode="advanced" auto="true"
-                                      sizeLimit="1000000" 
-                                      fileUploadListener="#{fileUploadController.upload}"/>
-
-                        <p:commandButton type="reset" value="Ponisti" />
                         <p:commandButton id="addButton" value="Sacuvaj" 
-                                        actionListener="#{scheduleView.addEvent}" 
-                                        oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
+                                         actionListener="#{scheduleView.addEvent}"
+                                         onsuccess="PF('myschedule').update();PF('eventDialog').hide();" />
                     </h:panelGrid>
                 </p:dialog>  
 
@@ -129,7 +123,8 @@
 
                         <p:outputLabel value="Profesor:" for="profesorDD" />
                         <p:autoComplete  id="profesorDD" dropdown="true" value="#{scheduleView.profesor}" 
-                            completeMethod="#{scheduleView.vratiProfesore}" var="profesor"
+                                         completeMethod="#{scheduleView.vratiProfesore}" var="profesor" 
+                                         disabled="#{scheduleView.disableProfesore}"
                             itemValue="#{profesor}" itemLabel="#{profesor.prezime} #{profesor.ime}" 
                             converter="profesorKonverter" forceSelection="true" emptyMessage="Nema rezultata">
                             <p:ajax event="itemSelect" update=":forma:schedule termini " 

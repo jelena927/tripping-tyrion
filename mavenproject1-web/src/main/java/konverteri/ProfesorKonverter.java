@@ -28,12 +28,12 @@ public class ProfesorKonverter implements Converter{
     
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        return sBProfesor.vratiProfesora(value);
+        return sBProfesor.vratiProfesora(Long.parseLong(value));
     }
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return ((Profesor)value).getProfesorId();
+        return String.valueOf(((Profesor)value).getProfesorId());
     }
 
     private SBProfesorLocal lookupSBProfesorLocal() {

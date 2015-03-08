@@ -13,6 +13,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -45,27 +47,26 @@ import javax.xml.bind.annotation.XmlTransient;
 })
 public class Profesor extends Korisnik  implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String profesorId;
+    private Long profesorId;
     private Set<Konsultacije> konsultacijeList;
     private Set<Predmet> predmetList;
 
     public Profesor() {
     }
 
-    public Profesor(String profesorId) {
+    public Profesor(Long profesorId) {
         this.profesorId = profesorId;
     }
 
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
     @Column(name = "profesorId")
-    public String getProfesorId() {
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    public Long getProfesorId() {
         return profesorId;
     }
 
-    public void setProfesorId(String profesorId) {
+    public void setProfesorId(Long profesorId) {
         this.profesorId = profesorId;
     }
 
@@ -96,7 +97,6 @@ public class Profesor extends Korisnik  implements Serializable {
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 50)
     @Column(name = "email")
     public String getEmail() {
         return email;
@@ -116,18 +116,6 @@ public class Profesor extends Korisnik  implements Serializable {
         this.konsultacijeList = konsultacijeList;
     }
 
-//    @JoinColumn(name = "predmetId", referencedColumnName = "predmetId")
-//    @ManyToOne(optional = false)
-//    public Predmet getPredmetId() {
-//        return predmetId;
-//    }
-//
-//    public void setPredmetId(Predmet predmet) {
-//        this.predmetId = predmet;
-//    }
-    
-//    @OneToMany(mappedBy = "profesorId")
-//    @XmlTransient
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "predaje", joinColumns = { 
             @JoinColumn(name = "profesorId", nullable = false, updatable = false) }, 
@@ -159,7 +147,7 @@ public class Profesor extends Korisnik  implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (profesorId != null ? profesorId.hashCode() : 0);
+        hash += profesorId;
         return hash;
     }
 
@@ -170,7 +158,7 @@ public class Profesor extends Korisnik  implements Serializable {
             return false;
         }
         Profesor other = (Profesor) object;
-        if ((this.profesorId == null && other.profesorId != null) || (this.profesorId != null && !this.profesorId.equals(other.profesorId))) {
+        if (this.profesorId != other.profesorId) {
             return false;
         }
         return true;

@@ -13,6 +13,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
@@ -41,10 +43,9 @@ public class Predmet implements Serializable {
     
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
     @Column(name = "predmetId")
-    private String predmetId;
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long predmetId;
     
     @Basic(optional = false)
     @NotNull
@@ -61,20 +62,20 @@ public class Predmet implements Serializable {
     public Predmet() {
     }
 
-    public Predmet(String predmetId) {
+    public Predmet(Long predmetId) {
         this.predmetId = predmetId;
     }
 
-    public Predmet(String predmetId, String naziv) {
+    public Predmet(Long predmetId, String naziv) {
         this.predmetId = predmetId;
         this.naziv = naziv;
     }
 
-    public String getPredmetId() {
+    public Long getPredmetId() {
         return predmetId;
     }
 
-    public void setPredmetId(String predmetId) {
+    public void setPredmetId(Long predmetId) {
         this.predmetId = predmetId;
     }
 

@@ -21,7 +21,7 @@ public interface SBProfesorLocal {
 
 //    List vratiProfesorePoPredmetuIPrefixu(String prefix, String predmetId);
     
-    Profesor vratiProfesora(String profesorId);
+    Profesor vratiProfesora(long profesorId);
 
     public List<Profesor> vratiSveProfesore();
     

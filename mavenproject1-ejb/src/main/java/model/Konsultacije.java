@@ -14,6 +14,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,7 +26,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -47,10 +48,9 @@ public class Konsultacije implements Serializable {
     
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
     @Column(name = "konsultacijeId")
-    private String konsultacijeId;
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long konsultacijeId;
     
     @Basic(optional = false)
     @NotNull
@@ -67,7 +67,7 @@ public class Konsultacije implements Serializable {
     @Column(name = "trajanjeJednogTermina")
     private Integer trajanjeJednogTermina;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "konsultacije", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "terminPK.konsultacije", fetch = FetchType.EAGER)
     private Set<Termin> terminList;
     
     @JoinColumn(name = "profesorId", referencedColumnName = "profesorId")
@@ -81,21 +81,31 @@ public class Konsultacije implements Serializable {
     public Konsultacije() {
     }
 
-    public Konsultacije(String konsultacijeId) {
+    public Konsultacije(Long konsultacijeId) {
         this.konsultacijeId = konsultacijeId;
     }
 
-    public Konsultacije(String konsultacijeId, Date vremePocetka, Date vremeZavrsetka) {
+    public Konsultacije(Long konsultacijeId, Date vremePocetka, Date vremeZavrsetka) {
         this.konsultacijeId = konsultacijeId;
         this.vremePocetka = vremePocetka;
         this.vremeZavrsetka = vremeZavrsetka;
     }
+    
+    public Konsultacije(Konsultacije k) {
+        this.konsultacijeId = k.konsultacijeId;
+        this.vremePocetka = k.vremePocetka;
+        this.vremeZavrsetka = k.vremeZavrsetka;
+        this.predmetId = k.predmetId;
+        this.profesorId = k.profesorId;
+        this.terminList = k.terminList;
+        this.trajanjeJednogTermina = k.trajanjeJednogTermina;
+    }
 
-    public String getKonsultacijeId() {
+    public Long getKonsultacijeId() {
         return konsultacijeId;
     }
 
-    public void setKonsultacijeId(String konsultacijeId) {
+    public void setKonsultacijeId(Long konsultacijeId) {
         this.konsultacijeId = konsultacijeId;
     }
 
@@ -130,6 +140,20 @@ public class Konsultacije implements Serializable {
 
     public void setTerminList(Set<Termin> terminList) {
         this.terminList = terminList;
+    }
+    
+    public void addTermin(Termin t){
+        if(terminList.contains(t))
+            return;
+        terminList.add(t);
+//        t.setKonsultacije(this);
+    }
+    
+    public void removeTermin(Termin t){
+        if(!terminList.contains(t))
+            return;
+        terminList.remove(t);
+//        t.setKonsultacije(null);
     }
 
     public Profesor getProfesorId() {

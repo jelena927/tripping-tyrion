@@ -6,15 +6,12 @@
 
 package ejb;
 
-import java.util.Date;
 import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import model.Korisnik;
-import model.Profesor;
+import model.Student;
 
 /**
  *
@@ -26,9 +23,8 @@ public class KorisnikServiceBean implements KorisnikServiceBeanLocal {
     private EntityManager em;
 
     @Override
-    public Korisnik findUserByLoginName(String email, String password) throws Exception{
+    public Korisnik findUserByLoginName(String email) throws Exception{
         Korisnik k = nadjiKorisnika(email);
-        proveriPassword(k, password);
         return k;
     }
 
@@ -47,9 +43,9 @@ public class KorisnikServiceBean implements KorisnikServiceBeanLocal {
         }
     }
 
-    private void proveriPassword(Korisnik k, String password) throws Exception {
-        if(!k.getPassword().equals(password)) 
-            throw new Exception("Pogresan password.");
+    @Override
+    public void dodajStudenta(Student s) throws Exception {
+        em.persist(s);
     }
     
 }

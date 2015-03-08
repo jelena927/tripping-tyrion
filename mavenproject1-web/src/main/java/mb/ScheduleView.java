@@ -41,16 +41,19 @@ public class ScheduleView implements Serializable {
     private MBPredmet mbPredmet;
     @ManagedProperty("#{mbProfesor}")
     private MBProfesor mbProfesor;
+    @ManagedProperty("#{mbTermin}")
+    private MbTermin mbTermin;
     private ScheduleModel eventModel;
-    private ScheduleModel lazyEventModel;
     private DefaultScheduleEvent event = new DefaultScheduleEvent();
-    private String txt1="text";
-    private String console;
     private Predmet predmet;
     private Profesor profesor;
     private String termini;
     private Termin termin;
     private Date selektovaniDatum;
+    private String tema;
+    private Date vreme;
+    private boolean disableProfesore = true;
+    private Konsultacije konsultacije;
 
     public Date getSelektovaniDatum() {
         return selektovaniDatum;
@@ -92,32 +95,6 @@ public class ScheduleView implements Serializable {
         this.profesor = profesor;
     }
 
-    public String getTxt1() {
-        return txt1;
-    }
-
-    public void setTxt1(String txt1) {
-        this.txt1 = txt1;
-    }
-    
-    private String txt2;
-
-    public String getTxt2() {
-        return txt2;
-    }
-
-    public void setTxt2(String txt2) {
-        this.txt2 = txt2;
-    }
-
-    public String getConsole() {
-        return console;
-    }
-
-    public void setConsole(String console) {
-        this.console = console;
-    }
- 
     public MBProfesor getMbProfesor() {
         return mbProfesor;
     }
@@ -129,7 +106,7 @@ public class ScheduleView implements Serializable {
     @PostConstruct
     public void init() {
         eventModel = new DefaultScheduleModel();
-        selektovaniDatum = fourDaysLater3pm();
+        selektovaniDatum = new Date(today().getTimeInMillis());
         termin = new Termin();
 //        eventModel.addEvent(new DefaultScheduleEvent("Champions League Match", previousDay8Pm(), previousDay11Pm()));
 //        eventModel.addEvent(new DefaultScheduleEvent("Birthday Party", today1Pm(), today6Pm()));
@@ -151,42 +128,13 @@ public class ScheduleView implements Serializable {
 //        };
     }
      
-    public Date getRandomDate(Date base) {
-        Calendar date = Calendar.getInstance();
-        date.setTime(base);
-        date.add(Calendar.DATE, ((int) (Math.random()*30)) + 1);    //set random day of month
-         
-        return date.getTime();
-    }
-    
-    private Date fourDaysLater3pm() {
-        Calendar t = (Calendar) today().clone(); 
-        t.set(Calendar.AM_PM, Calendar.PM);
-        t.set(Calendar.DATE, t.get(Calendar.DATE) + 4);
-        t.set(Calendar.HOUR, 3);
-         
-        return t.getTime();
-    }
-     
-    public Date getInitialDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(calendar.get(Calendar.YEAR), Calendar.FEBRUARY, calendar.get(Calendar.DATE), 0, 0, 0);
-         
-        return calendar.getTime();
-    }
-     
     public ScheduleModel getEventModel() {
         return eventModel;
-    }
-     
-    public ScheduleModel getLazyEventModel() {
-        return lazyEventModel;
     }
  
     private Calendar today() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), 0, 0, 0);
- 
         return calendar;
     }
      
@@ -198,27 +146,36 @@ public class ScheduleView implements Serializable {
         this.event = event;
     }
      
-    public void addEvent(ActionEvent actionEvent) {
-        if(event.getId() == null){
-            eventModel.addEvent(event);
-            System.out.println("+++++++++++---------------if");
-        } else {
-            eventModel.updateEvent(event);
-            System.out.println("+++++++++++---------------else");
+    public void addEvent(ActionEvent actionEvent) throws Exception {
+        if(predmet == null || profesor == null)
+            throw new Exception("Nije moguce dodati termin.");
+        if(tema == null || vreme == null || selektovaniDatum == null){
+            throw new Exception("Sva polja su obavezna.");
         }
-        event = new DefaultScheduleEvent();
+        event.setTitle(tema);
+        Calendar start = Calendar.getInstance();
+        start.set(selektovaniDatum.getYear()+1900, selektovaniDatum.getMonth(), selektovaniDatum.getDate(), 
+                                vreme.getHours(), vreme.getMinutes());
+        Calendar end = (Calendar) start.clone();
+        end.add(Calendar.MINUTE, 30);
+        if(!checkTermin(new Date(start.getTimeInMillis()), new Date(end.getTimeInMillis())))
+            throw new Exception("Datum je neispravan.");
+        event.setStartDate(new Date(start.getTimeInMillis()));
+        event.setEndDate(new Date(end.getTimeInMillis()));
+        
+        mbTermin.dodaj(event, konsultacije);
+        
+        eventModel.addEvent(event);
+        reset();
     }
      
     public void onEventSelect(SelectEvent selectEvent) {
-        System.out.println("-------------event selected");
         event = (DefaultScheduleEvent) selectEvent.getObject();
     }
      
     public void onDateSelect(SelectEvent selectEvent) {
-        System.out.println("-------------date selected");
         selektovaniDatum = ((Date) selectEvent.getObject());
-        event = new DefaultScheduleEvent("Zauzeto", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
-        event.setEditable(true);
+        event = new DefaultScheduleEvent(tema, (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
     }
      
     public void onEventMove(ScheduleEntryMoveEvent event) {
@@ -235,24 +192,6 @@ public class ScheduleView implements Serializable {
      
     private void addMessage(FacesMessage message) {
         FacesContext.getCurrentInstance().addMessage(null, message);
-    }
-    
-    public List<String> completeText(String query) {
-        List<String> results = new ArrayList<String>();
-        for(int i = 0; i < 10; i++) {
-            results.add(query + i);
-        }
-         
-        return results;
-    }
-    
-    public List<String> completeText2(String query) {
-        List<String> results = new ArrayList<String>();
-        for(int i = 0; i < 10; i++) {
-            results.add(query + i);
-        }
-         
-        return results;
     }
     
     public List<Predmet> vratiPredmete(String prefix) {
@@ -282,9 +221,11 @@ public class ScheduleView implements Serializable {
     }
     
     public void reset(){
-        predmet = null;
-        profesor = null;
-        
+        termin = null;
+        vreme = null;
+        selektovaniDatum = null;
+        tema = null;
+        event = null;
     }
     
     public void onProfesorChange(){
@@ -293,25 +234,75 @@ public class ScheduleView implements Serializable {
         for (Konsultacije k : profesor.getKonsultacijeList()) {
             SimpleDateFormat sdfPocetak = new SimpleDateFormat("dd.MM. hh:mm");
             SimpleDateFormat sdfKraj = new SimpleDateFormat("hh:mm");
-            if(k.getPredmetId().getPredmetId().equals(predmet.getPredmetId())){
+            if(k.getPredmetId().equals(predmet)){
                 termini += sdfPocetak.format(k.getVremePocetka()) + " - " + 
                         sdfKraj.format(k.getVremeZavrsetka()) + "\n";
                 for (Termin t: k.getTerminList()) {
                     eventModel.addEvent(new DefaultScheduleEvent("Zauzeto", 
-                            t.getVreme(), new Date(t.getVreme().getTime() + k.getTrajanjeJednogTermina()*60*1000)));
+                            t.getTerminPK().getVreme(), new Date(t.getTerminPK().getVreme().getTime() + k.getTrajanjeJednogTermina()*60*1000)));
                 }
             }
         }
     }
     
+    private boolean checkTermin(Date start, Date end){
+        for (Konsultacije k : profesor.getKonsultacijeList()) {
+            if(k.getPredmetId().equals(predmet)){
+                if(k.getVremePocetka().before(start) && k.getVremeZavrsetka().after(end)){
+                    for(Termin t: k.getTerminList()){
+                        if(t.getTerminPK().getVreme().after(start) && t.getTerminPK().getVreme().before(end))
+                            return false;
+                    }
+                konsultacije = k;
+                return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public void onPredmetChange(){
         profesor = null;
         eventModel.clear();
+        disableProfesore = false;
     }
     
     public void onPredmetType(){
         predmet = null;
         profesor = null;
+        eventModel.clear();
+        termini = null;
     }
 
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        this.tema = tema;
+    }
+
+    public Date getVreme() {
+        return vreme;
+    }
+
+    public void setVreme(Date vreme) {
+        this.vreme = vreme;
+    }
+
+    public boolean isDisableProfesore() {
+        return disableProfesore;
+    }
+
+    public void setDisableProfesore(boolean disableProfesore) {
+        this.disableProfesore = disableProfesore;
+    }
+
+    public MbTermin getMbTermin() {
+        return mbTermin;
+    }
+
+    public void setMbTermin(MbTermin mbTermin) {
+        this.mbTermin = mbTermin;
+    }
 }

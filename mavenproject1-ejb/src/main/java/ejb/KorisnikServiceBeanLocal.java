@@ -6,9 +6,9 @@
 
 package ejb;
 
-import java.util.Date;
 import javax.ejb.Local;
 import model.Korisnik;
+import model.Student;
 
 /**
  *
@@ -17,6 +17,6 @@ import model.Korisnik;
 @Local
 public interface KorisnikServiceBeanLocal {
 
-    Korisnik findUserByLoginName(String email, String password) throws Exception;
-    
+    Korisnik findUserByLoginName(String email) throws Exception;
+    void dodajStudenta(Student s) throws Exception;
 }

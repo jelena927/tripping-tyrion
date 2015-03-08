@@ -30,13 +30,13 @@ public class PredmetKonverter implements Converter{
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         String predmetId = value;
-        return sBPredmet.vratiPredmet(predmetId);
+        return sBPredmet.vratiPredmet(Long.parseLong(predmetId));
     }
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         Predmet p = (Predmet) value;
-        return p.getPredmetId();
+        return String.valueOf(p.getPredmetId());
     }
 
     private SBPredmetLocal lookupSBPredmetLocal() {

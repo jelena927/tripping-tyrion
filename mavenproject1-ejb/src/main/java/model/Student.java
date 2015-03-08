@@ -11,6 +11,8 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -37,17 +39,17 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Student extends Korisnik implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private String studentId;
+    private Long studentId;
     private List<Termin> terminList;
 
     public Student() {
     }
 
-    public Student(String studentId) {
+    public Student(Long studentId) {
         this.studentId = studentId;
     }
 
-    public Student(String studentId, String ime, String prezime, String email) {
+    public Student(Long studentId, String ime, String prezime, String email) {
         this.studentId = studentId;
         this.ime = ime;
         this.prezime = prezime;
@@ -55,14 +57,13 @@ public class Student extends Korisnik implements Serializable {
     }
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
     @Column(name = "studentId")
-    public String getStudentId() {
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    public Long getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(String studentId) {
+    public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
 

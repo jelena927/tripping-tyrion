@@ -42,7 +42,7 @@ public class SBProfesor implements SBProfesorLocal {
 //    }
 
     @Override
-    public Profesor vratiProfesora(String profesorId) {
+    public Profesor vratiProfesora(long profesorId) {
         return (Profesor) em.createNamedQuery("Profesor.findByProfesorId").setParameter("profesorId", profesorId).getSingleResult();
     }
 

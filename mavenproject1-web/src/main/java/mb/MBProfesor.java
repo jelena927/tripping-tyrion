@@ -9,7 +9,6 @@ package mb;
 import ejb.SBProfesorLocal;
 import java.io.Serializable;
 import java.util.List;
-import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -25,18 +24,11 @@ import model.Profesor;
 public class MBProfesor implements Serializable {
     @EJB
     private SBProfesorLocal sBProfesor;
-
     
     /**
      * Creates a new instance of MBProfesor
      */
     public MBProfesor() {
-        System.out.println("13333333333333333222222222222222211111111111111111111111111111111111111111111111111144444444");
-    }
-
-    @PreDestroy
-    public void oi(){
-        System.out.println("23333333333333333222222222222222211111111111111111111111111111111111111111111111111144444444");
     }
     
     public List<Profesor> vratiProfesore(String prefix, Predmet predmet) {

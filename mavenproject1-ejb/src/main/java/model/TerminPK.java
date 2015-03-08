@@ -7,11 +7,16 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -19,69 +24,60 @@ import javax.validation.constraints.Size;
  */
 @Embeddable
 public class TerminPK implements Serializable {
+    private static final long serialVersionUID = 1L;
     
     @Basic(optional = false)
-    @NotNull
-    @Column(name = "konsultacijeId")
-    private String konsultacijeid;
+    @JoinColumn(name = "konsultacijeId", referencedColumnName = "konsultacijeId", insertable = false, updatable = false)
+    @MapsId("konsultacijeid")
+    @ManyToOne(optional = false,cascade = CascadeType.ALL)
+    private Konsultacije konsultacije;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 10)
-    @Column(name = "terminId")
-    private String terminId;
+    @Column(name = "vreme")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date vreme;
 
     public TerminPK() {
     }
 
-    public TerminPK(String konsultacijeId, String terminId) {
-        this.konsultacijeid = konsultacijeId;
-        this.terminId = terminId;
+    public Konsultacije getKonsultacije() {
+        return konsultacije;
     }
 
-    public String getKonsultacijeId() {
-        return konsultacijeid;
+    public void setKonsultacije(Konsultacije konsultacije) {
+        this.konsultacije = konsultacije;
     }
 
-    public void setKonsultacijeId(String konsultacijeId) {
-        this.konsultacijeid = konsultacijeId;
+    public Date getVreme() {
+        return vreme;
     }
 
-    public String getTerminId() {
-        return terminId;
-    }
-
-    public void setTerminId(String terminId) {
-        this.terminId = terminId;
+    public void setVreme(Date vreme) {
+        this.vreme = vreme;
     }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (konsultacijeid != null ? konsultacijeid.hashCode() : 0);
-        hash += (terminId != null ? terminId.hashCode() : 0);
+        int hash = 5;
+        hash += (konsultacije != null) ? konsultacije.hashCode():0;
+        hash += (vreme != null) ? vreme.hashCode():0;
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TerminPK)) {
+    public boolean equals(Object obj) {
+        if (obj == null) {
             return false;
         }
-        TerminPK other = (TerminPK) object;
-        if ((this.konsultacijeid == null && other.konsultacijeid != null) || (this.konsultacijeid != null && !this.konsultacijeid.equals(other.konsultacijeid))) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        if ((this.terminId == null && other.terminId != null) || (this.terminId != null && !this.terminId.equals(other.terminId))) {
+        final TerminPK other = (TerminPK) obj;
+        if (this.konsultacije != other.konsultacije && (this.konsultacije == null || !this.konsultacije.equals(other.konsultacije))) {
+            return false;
+        }
+        if (this.vreme != other.vreme && (this.vreme == null || !this.vreme.equals(other.vreme))) {
             return false;
         }
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "model.TerminPK[ konsultacijeId=" + konsultacijeid + ", terminId=" + terminId + " ]";
-    }
-    
 }

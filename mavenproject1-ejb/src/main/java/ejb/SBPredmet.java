@@ -7,7 +7,6 @@
 package ejb;
 
 import java.util.List;
-import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -41,7 +40,7 @@ public class SBPredmet implements SBPredmetLocal {
     }
 
     @Override
-    public Predmet vratiPredmet(String predmetId) {
+    public Predmet vratiPredmet(long predmetId) {
         return (Predmet) em.createNamedQuery("Predmet.findByPredmetId").setParameter("predmetId", predmetId).getSingleResult();
     }
     

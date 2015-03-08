@@ -23,6 +23,6 @@ public interface SBPredmetLocal {
 
     public List<Predmet> vratiPredmetePoPrefiksu(String prefix);
     
-    public Predmet vratiPredmet(String predmetId);
+    public Predmet vratiPredmet(long predmetId);
     
 }
