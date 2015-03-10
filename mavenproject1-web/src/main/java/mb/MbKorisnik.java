@@ -67,4 +67,8 @@ public class MbKorisnik {
         }
         return role;
     }
+    
+    public Korisnik vratiKorisnika(){
+        return nadjiPoMailu(koJeKorisnik());
+    }
 }

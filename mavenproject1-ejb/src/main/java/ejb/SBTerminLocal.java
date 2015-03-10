@@ -7,7 +7,6 @@
 package ejb;
 
 import javax.ejb.Local;
-import model.Konsultacije;
 import model.Termin;
 
 /**
@@ -18,6 +17,4 @@ import model.Termin;
 public interface SBTerminLocal {
     public Termin vratiTermin(long terminId);
     public void sacuvajTermin(Termin t);
-    public Konsultacije vratiKonsultacije(long konsultacijeId);
-    public void obrisiKonsultacije(Konsultacije k);
 }

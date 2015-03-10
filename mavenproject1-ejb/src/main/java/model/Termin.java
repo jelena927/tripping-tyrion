@@ -54,7 +54,7 @@ public class Termin implements Serializable {
     
     @Basic(optional = false)
     @JoinColumn(name = "studentId", referencedColumnName = "studentId")
-    @ManyToOne
+    @ManyToOne(targetEntity = Student.class)
     private Student student;
 
     public Termin() {

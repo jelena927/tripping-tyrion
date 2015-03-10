@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui"> 
+
+<f:view contentType="text/html">
+    <h:head>
+        <f:facet name="first">
+            <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            <title>Konsultacije</title>
+        </f:facet>
+        <script type="text/javascript">
+    PrimeFaces.locales ['sr'] = {
+    closeText: 'Zatvori',
+    prevText: 'Nazad',
+    nextText: 'Napred',
+    monthNames: ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Juni', 'Juli', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar' ],
+    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec' ],
+    dayNames: ['Nedelja', 'Ponedeljak', 'Utorak', 'Sreda', 'Četvrtak', 'Petak', 'Subota'],
+    dayNamesShort: ['Ned', 'Pon', 'Uto', 'Sre', 'Čet', 'Pet', 'Sub'],
+    dayNamesMin: ['N', 'P', 'U', 'S ', 'Č', 'P ', 'S'],
+    weekHeader: 'Sedmica',
+    firstDay: 1,
+    isRTL: false,
+    showMonthAfterYear: false,
+    yearSuffix:'',
+    timeOnlyTitle: 'Vreme',
+    timeText: 'Vreme',
+    hourText: 'Sat',
+    minuteText: 'Minut',
+    secondText: 'Sekunda',
+    currentText: 'Danas',
+    ampm: false,
+    month: 'Mesec',
+    week: 'sedmica',
+    day: 'Dan',
+    allDayText: 'Celi Dan'
+};
+    
+</script>
+<style type="text/css">
+    .value {
+        width: 800px;
+    }
+    .highlight {
+        border: 1px solid #262626 !important;
+        color: #dddddd !important;
+        background-color: #4d4d4d !important;
+        box-shadow: 0 0 8px #66cc00;
+    }
+    #east {
+        width: 25% !important;
+        padding-left: 3%;
+        padding-right: 3%;
+        overflow: hidden;
+    }
+    #center {
+        width: 59% !important;
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+</style>
+</h:head>
+<h:body>
+    <p:layout  fullPage="true">
+
+        <p:layoutUnit position="center" id="center">
+            <h:form id="forma">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+                    <p:growl id="messages" showDetail="true" />
+                    <h:panelGrid columnClasses="value">
+                        <p:schedule initialDate="#{scheduleViewProf.selektovaniDatum}" id="schedule" 
+                                    value="#{scheduleViewProf.eventModel}" widgetVar="myschedule" locale="sr">
+                            <p:ajax event="dateSelect" listener="#{scheduleViewProf.onDateSelect}" />
+                            <p:ajax event="eventSelect" listener="#{scheduleViewProf.onEventSelect}" />
+                        </p:schedule>
+                    </h:panelGrid>
+            </h:form>
+        </p:layoutUnit>
+
+        <p:layoutUnit position="east" id="east">
+            <h:form id="forma2">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <p:panel id="panel" header="Izaberite predmet" styleClass="panel">
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <p:outputLabel value="Predmet:" for="predmetDD" />
+                        <p:autoComplete id="predmetDD" dropdown="true" value="#{scheduleViewProf.predmet}" 
+                            completeMethod="#{scheduleViewProf.vratiPredmeteZaProfesora}" var="predmet"
+                            itemValue="#{predmet}" itemLabel="#{predmet.naziv}" converter="predmetKonverter"
+                            forceSelection="true" emptyMessage="Nema rezultata">
+                            <p:ajax event="itemSelect" update="konsultacije dodaj :forma:schedule" 
+                                    listener="#{scheduleViewProf.onPredmetChange}"/>
+                            <p:ajax event="keyup" update="konsultacije dodaj :forma:schedule" 
+                                    listener="#{scheduleViewProf.onPredmetType}"/>
+                        </p:autoComplete>
+                        
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" cellpadding="1">
+                        <p:outputLabel value="Termini konsultacija:" />
+                        
+                        <p:dataTable id="konsultacije" var="k" value="#{scheduleViewProf.konsultacijeZaPredmet()}" emptyMessage="Nema rezultata">
+                            <p:column headerText="Datum">
+                                <h:outputText value="#{scheduleViewProf.formatDatum(k)}" />
+                            </p:column>
+
+                            <p:column headerText="Vreme">
+                                <h:outputText value="#{scheduleViewProf.formatVreme(k)}" />
+                            </p:column>
+                            
+                            <p:column headerText="Otkaži">
+                                <p:commandButton actionListener="#{scheduleViewProf.otkazi(k)}" id="remove" icon="ui-icon-closethick" 
+                                                 update="konsultacije"/>
+                            </p:column>
+                        </p:dataTable>
+                        
+                        <p:commandButton id="dodaj" value="Dodajte konsultacije" disabled="#{scheduleViewProf.disableDodaj}">
+                            <p:ajax oncomplete="PF('konsultacijeDialog').show();" />
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+                  
+                <p:dialog widgetVar="konsultacijeDialog" header="Nove konsultacije" showEffect="clip" hideEffect="clip">
+                    <h:panelGrid id="konsultacijeDetails" columns="2">
+                        
+                        <p:outputLabel for="datumPopup2" value="Datum:"/>
+                        <p:calendar id="datumPopup2" value="#{scheduleViewProf.kDatum}" pattern="dd.MM.yyyy."/>
+                        
+                        <p:outputLabel for="time2" value="Od:" />
+                        <p:calendar id="time2" pattern="HH:mm" value="#{scheduleViewProf.kOd}" timeOnly="true" locale="sr"/>
+                        
+                        <p:outputLabel for="time3" value="Do" />
+                        <p:calendar id="time3"  pattern="HH:mm" value="#{scheduleViewProf.kDo}" timeOnly="true" locale="sr"/>
+
+                        <p:outputLabel for="trajanje" value="Trajanje jednog termina (min)" />
+                        <p:inputText id="trajanje" type="number" value="#{scheduleViewProf.trajanje}"/>
+                        
+                        <p:commandButton id="addButton" value="Sacuvaj" 
+                                         actionListener="#{scheduleViewProf.dodajKonsultacije}"
+                                         update="konsultacije"/>
+                    </h:panelGrid>
+                </p:dialog>  
+
+            </h:form>
+            <p:panel id="panelLogout" header="Informacije o korisniku" styleClass="panel">
+                <h:form id="logout" onsubmit="document.getElementById('logout').action='/mavenproject1-web/logout';" prependId="false">
+                    <input name="${_csrf.parameterName}" type="hidden" value="${_csrf.token}"></input>
+                    <h:panelGrid columns="2" cellspacing="5" >
+                        <p:outputLabel value="Ulogovani ste kao:" for="korisnik"/>
+                        <h:outputText title="korisnik" id="korisnik" value="#{mbKorisnik.koJeKorisnik()}"/>
+                        <p:outputLabel value="Tip korisnika:" for="role"/>
+                        <h:outputText title="role" id="role" value="#{mbKorisnik.vratiTipKorisnika()}"/>
+                        <p:commandButton id="submit" value="Odjavite se" ajax="false"/>
+                    </h:panelGrid>
+                </h:form>
+            </p:panel>
+        </p:layoutUnit>
+    </p:layout>
+
+</h:body>   
+</f:view>
+</html>
+

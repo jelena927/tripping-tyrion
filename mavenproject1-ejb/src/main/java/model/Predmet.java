@@ -52,10 +52,10 @@ public class Predmet implements Serializable {
     @Column(name = "naziv")
     private String naziv;
     
-    @OneToMany( mappedBy = "predmetId")
+    @OneToMany( mappedBy = "predmetId", targetEntity = Konsultacije.class)
     private List<Konsultacije> konsultacijeList;
     
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "predmetList")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "predmetList", targetEntity = Profesor.class)
     private List<Profesor> profesorList;
 
     public Predmet() {

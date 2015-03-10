@@ -32,11 +32,6 @@ public class MBProfesor implements Serializable {
     }
     
     public List<Profesor> vratiProfesore(String prefix, Predmet predmet) {
-//        System.out.println("prefix=" + prefix);
-//        System.out.println("pred=" + predmet.getPredmetId());
-//        if(prefix == null)
-//            return sBProfesor.vratiProfesorePoPredmetu(predmet.getPredmetId());
-//        return sBProfesor.vratiProfesorePoPredmetuIPrefixu(prefix, predmet.getPredmetId());
         return null;
     }
 

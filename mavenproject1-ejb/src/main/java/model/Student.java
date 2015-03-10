@@ -104,7 +104,7 @@ public class Student extends Korisnik implements Serializable {
         this.email = email;
     }
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student",targetEntity = Termin.class)
     @XmlTransient
     public List<Termin> getTerminList() {
         return terminList;

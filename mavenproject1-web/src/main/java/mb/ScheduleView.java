@@ -22,7 +22,9 @@ import javax.faces.context.FacesContext;
 import model.Konsultacije;
 import model.Predmet;
 import model.Profesor;
+import model.Student;
 import model.Termin;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.ScheduleEntryMoveEvent;
 import org.primefaces.event.ScheduleEntryResizeEvent;
 import org.primefaces.event.SelectEvent;
@@ -43,26 +45,26 @@ public class ScheduleView implements Serializable {
     private MBProfesor mbProfesor;
     @ManagedProperty("#{mbTermin}")
     private MbTermin mbTermin;
+    @ManagedProperty("#{mbKonsultacije}")
+    private MbKonsultacije mbKonsultacije;
     @ManagedProperty("#{mbKorisnik}")
     private MbKorisnik mbKorisnik;
     private ScheduleModel eventModel;
     private DefaultScheduleEvent event = new DefaultScheduleEvent();
     private Predmet predmet;
     private Profesor profesor;
-    private String terminiKonsultacija;
     private Date selektovaniDatum;
     private String tema;
     private Date vreme;
     private boolean disableProfesore = true;
     private Konsultacije konsultacije;
-    private Date kDatum;
-    private Date kOd;
-    private Date kDo;
+    private Student student;
     
     @PostConstruct
     public void init() {
         eventModel = new DefaultScheduleModel();
         selektovaniDatum = new Date(today().getTimeInMillis());
+        student = (Student) mbKorisnik.vratiKorisnika();
     }
 
     public Date getSelektovaniDatum() {
@@ -71,14 +73,6 @@ public class ScheduleView implements Serializable {
 
     public void setSelektovaniDatum(Date danasnjiDatum) {
         this.selektovaniDatum = danasnjiDatum;
-    }
-
-    public String getTerminiKonsultacija() {
-        return terminiKonsultacija;
-    }
-
-    public void setTerminiKonsultacija(String termini) {
-        this.terminiKonsultacija = termini;
     }
     
     public Predmet getPredmet() {
@@ -124,10 +118,18 @@ public class ScheduleView implements Serializable {
     }
      
     public void addEvent(ActionEvent actionEvent) throws Exception {
-        if(predmet == null || profesor == null)
-            throw new Exception("Nije moguce dodati termin.");
+        if(predmet == null || profesor == null){
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", 
+                    "Morate izabrati profesora i predmet.");
+            FacesContext.getCurrentInstance().addMessage("greske", message);
+            return;
+        }
+            
         if(tema == null || vreme == null || selektovaniDatum == null){
-            throw new Exception("Sva polja su obavezna.");
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", 
+                    "Sva polja su obavezna.");
+            FacesContext.getCurrentInstance().addMessage("greske", message);
+            return;
         }
         event.setTitle(tema);
         Calendar start = Calendar.getInstance();
@@ -135,8 +137,12 @@ public class ScheduleView implements Serializable {
                                 vreme.getHours(), vreme.getMinutes());
         Calendar end = (Calendar) start.clone();
         end.add(Calendar.MINUTE, 30);
-        if(!checkTermin(new Date(start.getTimeInMillis()), new Date(end.getTimeInMillis())))
-            throw new Exception("Datum je neispravan.");
+        if(!checkTermin(new Date(start.getTimeInMillis()), new Date(end.getTimeInMillis()))){
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "", 
+                    "Izabrani datum nije dostupan.");
+            FacesContext.getCurrentInstance().addMessage("greske", message);
+            return;
+        }
         event.setStartDate(new Date(start.getTimeInMillis()));
         event.setEndDate(new Date(end.getTimeInMillis()));
         
@@ -144,6 +150,7 @@ public class ScheduleView implements Serializable {
         
         eventModel.addEvent(event);
         reset();
+        RequestContext.getCurrentInstance().execute("eventDialog.hide()");
     }
      
     public void onEventSelect(SelectEvent selectEvent) {
@@ -157,13 +164,11 @@ public class ScheduleView implements Serializable {
      
     public void onEventMove(ScheduleEntryMoveEvent event) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event moved", "Day delta:" + event.getDayDelta() + ", Minute delta:" + event.getMinuteDelta());
-         
         addMessage(message);
     }
      
     public void onEventResize(ScheduleEntryResizeEvent event) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Event resized", "Day delta:" + event.getDayDelta() + ", Minute delta:" + event.getMinuteDelta());
-         
         addMessage(message);
     }
      
@@ -205,17 +210,14 @@ public class ScheduleView implements Serializable {
     }
     
     public void onProfesorChange(){
-        terminiKonsultacija = "";
         eventModel.clear();
         for (Konsultacije k : profesor.getKonsultacijeList()) {
-            SimpleDateFormat sdfPocetak = new SimpleDateFormat("dd.MM. hh:mm");
-            SimpleDateFormat sdfKraj = new SimpleDateFormat("hh:mm");
             if(k.getPredmetId().equals(predmet)){
-                terminiKonsultacija += sdfPocetak.format(k.getVremePocetka()) + " - " + 
-                        sdfKraj.format(k.getVremeZavrsetka()) + "\n";
                 for (Termin t: k.getTerminList()) {
-                    eventModel.addEvent(new DefaultScheduleEvent("Zauzeto", 
-                            t.getTerminPK().getVreme(), new Date(t.getTerminPK().getVreme().getTime() + k.getTrajanjeJednogTermina()*60*1000)));
+                    eventModel.addEvent(new DefaultScheduleEvent(
+                            (student.equals(t.getStudent()))?t.getTema():"Zauzeto", 
+                            t.getTerminPK().getVreme(), 
+                            new Date(t.getTerminPK().getVreme().getTime() + k.getTrajanjeJednogTermina()*60*1000)));
                 }
             }
         }
@@ -247,7 +249,6 @@ public class ScheduleView implements Serializable {
         predmet = null;
         profesor = null;
         eventModel.clear();
-        terminiKonsultacija = null;
     }
 
     public String getTema() {
@@ -303,36 +304,13 @@ public class ScheduleView implements Serializable {
         sVreme += sdf.format(k.getVremeZavrsetka());
         return sVreme;
     }
-    
-    public void otkazi(Konsultacije k){
-        mbTermin.obrisiKonsultacije(k);
-    }
-    
-    public void dodajKonsultacije(Object o){
-        System.out.println(o);
-    }
-    
-    public Date getkDatum() {
-        return kDatum;
+
+    public MbKonsultacije getMbKonsultacije() {
+        return mbKonsultacije;
     }
 
-    public void setkDatum(Date kDatum) {
-        this.kDatum = kDatum;
+    public void setMbKonsultacije(MbKonsultacije mbKonsultacije) {
+        this.mbKonsultacije = mbKonsultacije;
     }
 
-    public Date getkOd() {
-        return kOd;
-    }
-
-    public void setkOd(Date kOd) {
-        this.kOd = kOd;
-    }
-
-    public Date getkDo() {
-        return kDo;
-    }
-
-    public void setkDo(Date kDo) {
-        this.kDo = kDo;
-    }
 }

@@ -29,7 +29,7 @@ public class TerminPK implements Serializable {
     @Basic(optional = false)
     @JoinColumn(name = "konsultacijeId", referencedColumnName = "konsultacijeId", insertable = false, updatable = false)
     @MapsId("konsultacijeid")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, targetEntity = Konsultacije.class)
     private Konsultacije konsultacije;
     
     @Column(name = "vreme")

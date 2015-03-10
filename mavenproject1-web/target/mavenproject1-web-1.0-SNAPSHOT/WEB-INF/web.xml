@@ -25,7 +25,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>faces/welcomePrimefaces.xhtml</welcome-file>
+        <welcome-file>faces/schedule.xhtml</welcome-file>
     </welcome-file-list>
     <context-param>
         <param-name>primefaces.THEME</param-name>
@@ -54,6 +54,12 @@
         <ejb-ref-type>Session</ejb-ref-type>
         <local>ejb.SBTerminLocal</local>
         <ejb-link>mavenproject1-ejb-1.0-SNAPSHOT.jar#SBTermin</ejb-link>
+    </ejb-local-ref>
+    <ejb-local-ref>
+        <ejb-ref-name>SBKonsultacije</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <local>ejb.SBKonsultacijeLocal</local>
+        <ejb-link>mavenproject1-ejb-1.0-SNAPSHOT.jar#SBKonsultacije</ejb-link>
     </ejb-local-ref>
     <persistence-unit-ref>
         <persistence-unit-ref-name>ime</persistence-unit-ref-name>
