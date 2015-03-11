@@ -146,7 +146,7 @@ public class ScheduleView implements Serializable {
         event.setStartDate(new Date(start.getTimeInMillis()));
         event.setEndDate(new Date(end.getTimeInMillis()));
         
-        mbTermin.dodaj(event, konsultacije);
+        mbTermin.dodaj(event, konsultacije, student, profesor);
         
         eventModel.addEvent(event);
         reset();

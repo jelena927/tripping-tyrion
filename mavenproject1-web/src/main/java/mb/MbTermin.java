@@ -16,6 +16,7 @@ import javax.faces.bean.SessionScoped;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -47,19 +48,18 @@ public class MbTermin implements Serializable{
     public MbTermin() {
     }
     
-    public void dodaj(DefaultScheduleEvent e, Konsultacije k){
+    public void dodaj(DefaultScheduleEvent e, Konsultacije k, Student s, Profesor p){
         
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Termin t = new Termin();
         t.setTema(e.getTitle());
-        t.setStudent((Student) mbKorisnik.nadjiPoMailu(auth.getName()));
+        t.setStudent(s);
         TerminPK tpk = new TerminPK();
         tpk.setVreme(e.getStartDate());
         tpk.setKonsultacije(k);
         t.setTerminPK(tpk);
         
         sBTermin.sacuvajTermin(t);
-        posaljiMail(t.getStudent(), t.getTerminPK().getKonsultacije().getProfesorId(), t);
+        posaljiMail(s, p, t);
     }
 
     public MbKorisnik getMbKorisnik() {
@@ -71,49 +71,40 @@ public class MbTermin implements Serializable{
     }
 
     private void posaljiMail(Student student, Profesor profesorId, Termin t) {
-        // Recipient's email ID needs to be mentioned.
-      String to = "jelena.m.djordjevic@gmail.com";
+        
+        //ToDo change username and password for google account
+        final String username = "*****";
+        final String password = "*****";
 
-      // Sender's email ID needs to be mentioned
-      String from = "jelena927@gmail.com";
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
 
-      // Assuming you are sending email from localhost
-      String host = "localhost";
+        Session session = Session.getInstance(props,
+          new javax.mail.Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                }
+          });
 
-      // Get system properties
-        Properties properties = System.getProperties();
-
-      // Setup mail server
-      properties.setProperty("mail.smtp.host", host);
-      properties.setProperty("mail.smtp.starttls.enable", "true");
-
-      // Get the default Session object.
-        Session session = Session.getDefaultInstance(properties);
-
-      try{
-         // Create a default MimeMessage object.
-          MimeMessage message = new MimeMessage(session);
-
-         // Set From: header field of the header.
-         message.setFrom(new InternetAddress(from));
-
-         // Set To: header field of the header.
-         message.addRecipient(Message.RecipientType.TO,
-                                  new InternetAddress(to));
-
-         // Set Subject: header field
-         message.setSubject("Zakazan termin konsultacija");
-
-         // Now set the actual message
-         message.setText("Student " + student.getIme() + " " + student.getPrezime()
-         + " je zakazao termin konsultacija za datum " + t.getTerminPK().getVreme()
-         + " Tema je " + t.getTema());
-
-         // Send message
-          Transport.send(message);
-         System.out.println("Sent message successfully....");
-      }catch (MessagingException mex) {
-         mex.printStackTrace();
-      }
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(profesorId.getEmail()));
+            message.setSubject("Konsultacije");
+            message.setText("Poštovani " + profesorId.getIme() + " " + profesorId.getPrezime() + ","
+                    + "\n\n Student " + student.getIme() + " " + student.getPrezime()
+                    + " je zakazao termin konsultacija"
+                    + " za datum " + t.getTerminPK().getVreme() + ".");
+            Transport.send(message);
+            
+            System.out.println("Message sent");
+        } catch (MessagingException e) {
+                throw new RuntimeException(e);
+        }
     }
 }
