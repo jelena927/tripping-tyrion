@@ -3,7 +3,7 @@ Officehours managment system
 # 1. About the project
 Officehours managment system is application that should facilitate students and teachers to schedule office hours (time outside of class which professors and teaching assistants schedule to meet with students).
 
-Application has two type of users students and professors. Professor can add new office hours, delete existing ones and see in calendar scheduled dates. Student can schedule meeting with professor for the specific subject. On every new scheduling, professor is informed by email.
+Application has two type of users: students and professors. Professor can add new office hours, delete existing ones and see in calendar scheduled dates. Student can schedule meeting with professor for the specific subject. On every new scheduling, professor is informed by email.
 
 # 2. Technical realisation
 Application is written in Java.
